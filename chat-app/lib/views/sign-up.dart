@@ -1,3 +1,4 @@
+import 'package:chat/Services/Database.dart';
 import 'package:chat/Services/auth.dart';
 import 'package:chat/widgets/widget.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'chatroomsscreen.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key key}) : super(key: key);
+  final Function toggle;
+  SignUp(this.toggle);
+
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -17,6 +20,8 @@ class _SignUpState extends State<SignUp> {
   bool isLoding=false;
 
   AuthMethods authMethods = new AuthMethods();
+  DatabaseMethods databaseMethods =  new DatabaseMethods();
+
   final formKey = GlobalKey<FormState>();
   TextEditingController userNameTextEditingController= new TextEditingController();
   TextEditingController emailTextEditingController= new TextEditingController();
@@ -25,12 +30,19 @@ class _SignUpState extends State<SignUp> {
   signMeUP(){
 
     if(formKey.currentState.validate()){
+
+      Map<String, String> userInfoMap = {
+        "Name": userNameTextEditingController.text,
+        "email": emailTextEditingController.text
+      };
+
       setState(() {
         isLoding=true;
       });
 
-      authMethods.signInWithEmailAndPassword(emailTextEditingController.text,passwordTextEditingController.text ).then((val){
-        print("${val.uid}");
+      authMethods.signUpWithEmailAndPassword(emailTextEditingController.text,passwordTextEditingController.text ).then((val){
+        //print("${val.uid}");
+        databaseMethods.uploadUserInfo(userInfoMap);
         Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) => ChatRoom()
         ));
@@ -135,11 +147,19 @@ class _SignUpState extends State<SignUp> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text("Already have an account?",style:mediumTextStyle(),),
-                          Text("Sign-In",style:TextStyle(
-                              decoration:TextDecoration.underline,
-                              fontSize:17 ,
-                              color: Colors.white
-                          ),
+                          GestureDetector(
+                            onTap:(){
+                              widget.toggle();
+                            },
+                            child: Container(
+                              padding:EdgeInsets.symmetric(vertical:8),
+                              child: Text("Sign-In",style:TextStyle(
+                                  decoration:TextDecoration.underline,
+                                  fontSize:17 ,
+                                  color: Colors.white
+                              ),
+                              ),
+                            ),
                           ),
                         ]
                     ),
