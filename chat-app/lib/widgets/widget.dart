@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 Widget appBarmain(BuildContext context){
     return AppBar(
-      title:Image.asset("assets/img/mars-logo.png", height:50,),
+      title:Image.asset("assets/img/logo.png", height:50,),
     );
 }
 

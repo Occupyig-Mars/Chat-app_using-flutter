@@ -14,26 +14,38 @@ class _SearchScreenState extends State<SearchScreen> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController searchTextEditingController =new TextEditingController();
 
-  QuerySnapshot searchSnapshot;
+  QuerySnapshot  searchSnapshot;
 
-  intiateSearch(){
+  initiateSearch(){
     databaseMethods
         .getUserByUsername(searchTextEditingController.text)
-        .then((val){
+          .then((val){
+          print("username");
+          setState(() {
+            searchSnapshot=val;
+            print(val);
 
-        searchSnapshot=val;
-    });
+          });
+        });
   }
 
+
   Widget searchList(){
-     return ListView.builder(
+     return searchSnapshot !=null? ListView.builder(
          itemCount:searchSnapshot.docs.length,
+         shrinkWrap: true,
          itemBuilder: (context,index){
            return SearchTile(
-             userName:searchSnapshot.docs[index].data['Name'],
-             userEmail:searchSnapshot.data.docs[index].data()['email'],
+             userName:searchSnapshot.docs[index].get("name"),
+             userEmail:searchSnapshot.docs[index].get("Email")
            );
-         });
+         }):Container(child:Text("no users"));
+  }
+
+  @override
+    void initState(){
+
+    super.initState();
   }
 
   @override
@@ -64,7 +76,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       )),
                   GestureDetector(
                     onTap:(){
-                      intiateSearch();
+                      initiateSearch();
+                      print("search");
                     },
                     child: Container(
                       height:40,
@@ -83,7 +96,8 @@ class _SearchScreenState extends State<SearchScreen> {
                   )
                   ]
               ),
-            )
+            ),
+            searchList()
           ]
         )
       ),
@@ -95,17 +109,19 @@ class SearchTile extends StatelessWidget {
 
  final String userName;
  final String userEmail;
- SearchTile({this.userName, this.userEmail});
+ SearchTile({this.userName, this.userEmail, });
 
   @override
   Widget build(BuildContext context) {
+    print(userName);
+    print(userEmail);
     return Container(
       child:Row(
         children: [
           Column(
             children: [
               Text(userName,style:simpleTextStyle(),),
-              Text(userEmail, style:simpleTextStyle(),      ),
+              Text(userEmail, style:simpleTextStyle(),),
             ],
           ),
           Spacer(),
@@ -120,6 +136,7 @@ class SearchTile extends StatelessWidget {
         ],
       ),
     );
+
   }
 }
 
