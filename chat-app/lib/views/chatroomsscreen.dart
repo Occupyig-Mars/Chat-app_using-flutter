@@ -1,5 +1,7 @@
 import 'package:chat/Services/auth.dart';
 import 'package:chat/helper/authentication.dart';
+import 'package:chat/helper/constants.dart';
+import 'package:chat/helper/helperfunction.dart';
 import 'package:chat/views/search.dart';
 import 'package:flutter/material.dart';
 
@@ -15,10 +17,20 @@ class _ChatRoomState extends State<ChatRoom> {
   AuthMethods authMethods= new AuthMethods();
 
   @override
+  void initState() {
+    getUserInfo();
+    super.initState();
+  }
+
+  getUserInfo()async{
+    Constants.myName= await HelperFunctions.getUserNameSharedPreference();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:Image.asset("assets/img/mars-logo.jpg", height:50,),
+        title:Image.asset("assets/img/send.png", height:50,),
       actions: [
         GestureDetector(
           onTap:(){

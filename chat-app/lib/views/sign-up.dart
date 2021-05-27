@@ -1,5 +1,7 @@
 import 'package:chat/Services/Database.dart';
 import 'package:chat/Services/auth.dart';
+import 'package:chat/helper/helperfunction.dart';
+import 'package:chat/helper/helperfunction.dart';
 import 'package:chat/widgets/widget.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +29,7 @@ class _SignUpState extends State<SignUp> {
   TextEditingController emailTextEditingController= new TextEditingController();
   TextEditingController passwordTextEditingController= new TextEditingController();
 
+
   signMeUP(){
 
     if(formKey.currentState.validate()){
@@ -36,6 +39,9 @@ class _SignUpState extends State<SignUp> {
         "email": emailTextEditingController.text
       };
 
+      HelperFunctions.saveUserEmailSharedPreference(emailTextEditingController.text);
+      HelperFunctions.saveUserNameSharedPreference(userNameTextEditingController.text);
+
       setState(() {
         isLoding=true;
       });
@@ -43,6 +49,7 @@ class _SignUpState extends State<SignUp> {
       authMethods.signUpWithEmailAndPassword(emailTextEditingController.text,passwordTextEditingController.text ).then((val){
         //print("${val.uid}");
         databaseMethods.uploadUserInfo(userInfoMap);
+        HelperFunctions.saveUserLoggedInSharedPreference(true);
         Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) => ChatRoom()
         ));
@@ -79,9 +86,12 @@ class _SignUpState extends State<SignUp> {
                               decoration:textfieldInputDecoration("Username")
                           ),
                           TextFormField(
-
                               controller: emailTextEditingController,
                               style:simpleTextStyle(),
+                              validator: (val){
+                                return RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(val) ?
+                                null : "Enter correct email";
+                              },
                               decoration:textfieldInputDecoration("email")
                           ),
                           TextFormField(
